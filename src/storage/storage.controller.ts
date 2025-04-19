@@ -48,7 +48,7 @@ export class StorageController {
       throw new BadRequestException('File is required');
     }
 
-    const bucket = uploadFileDto.bucket || BucketType.IMAGES;
+    const bucket = uploadFileDto.bucket || BucketType.AVATARS;
     const folder = uploadFileDto.folder;
 
     const result = await this.storageService.uploadFile(file, {
@@ -76,7 +76,7 @@ export class StorageController {
       throw new BadRequestException('Files are required');
     }
 
-    const bucket = uploadFileDto.bucket || BucketType.IMAGES;
+    const bucket = uploadFileDto.bucket || BucketType.AVATARS;
     const folder = uploadFileDto.folder;
 
     const results = await this.storageService.uploadMultipleFiles(files, {

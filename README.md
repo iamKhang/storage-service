@@ -72,7 +72,7 @@ POST /api/v1/storage/upload
 
 Form data:
 - `file`: The file to upload
-- `bucket` (optional): The bucket to store the file in (default: 'images')
+- `bucket` (optional): The bucket to store the file in (default: 'avatars')
 - `folder` (optional): The folder path within the bucket
 
 ### Upload multiple files
@@ -83,7 +83,7 @@ POST /api/v1/storage/upload-multiple
 
 Form data:
 - `files`: The files to upload (array)
-- `bucket` (optional): The bucket to store the files in (default: 'images')
+- `bucket` (optional): The bucket to store the files in (default: 'avatars')
 - `folder` (optional): The folder path within the bucket
 
 ### Get file information
@@ -111,9 +111,8 @@ Parameters:
 The service is designed to work with multiple buckets in Supabase Storage. Each bucket can be used for different types of files:
 
 - `avatars`: For user profile pictures
-- `documents`: For document files (PDF, DOC, etc.)
-- `videos`: For video files
-- `images`: For general image files
+- `courses`: For course-related files and materials
+- `discussions`: For files related to discussions and forums
 
 Within each bucket, you can organize files in folders by specifying the `folder` parameter when uploading files.
 
