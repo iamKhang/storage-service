@@ -1,157 +1,249 @@
 {
   "info": {
-    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "name": "Storage Service API",
-    "description": "Collection for testing the Storage Service API with Supabase integration",
+    "description": "Collection for testing the Storage Service API endpoints",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Upload Single File",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            {
-              "key": "file",
-              "type": "file",
-              "src": []
+      "name": "Upload",
+      "item": [
+        {
+          "name": "Upload Single File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "bucket",
+                  "value": "avatars",
+                  "description": "Optional. Default is 'avatars'. Other options: 'courses', 'discussions'",
+                  "type": "text"
+                },
+                {
+                  "key": "folder",
+                  "value": "user123",
+                  "description": "Optional. Folder path within the bucket",
+                  "type": "text"
+                }
+              ]
             },
-            {
-              "key": "bucket",
-              "value": "avatars",
-              "description": "Optional. Default is 'avatars'. Options: avatars, courses, discussions",
-              "type": "text"
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "upload"]
             },
-            {
-              "key": "folder",
-              "value": "test-folder",
-              "description": "Optional. Folder path within the bucket",
-              "type": "text"
-            }
-          ]
+            "description": "Upload a single file to Supabase Storage"
+          }
         },
-        "url": {
-          "raw": "{{baseUrl}}/storage/upload",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "storage",
-            "upload"
-          ]
+        {
+          "name": "Upload Multiple Files",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": [],
+                  "description": "Multiple files can be selected"
+                },
+                {
+                  "key": "bucket",
+                  "value": "courses",
+                  "description": "Optional. Default is 'avatars'. Other options: 'courses', 'discussions'",
+                  "type": "text"
+                },
+                {
+                  "key": "folder",
+                  "value": "course123/materials",
+                  "description": "Optional. Folder path within the bucket",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/upload-multiple",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "upload-multiple"]
+            },
+            "description": "Upload multiple files to Supabase Storage"
+          }
         },
-        "description": "Upload a single file to Supabase Storage"
-      },
-      "response": []
+        {
+          "name": "Upload Files to Specific Bucket",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": [],
+                  "description": "Multiple files can be selected"
+                },
+                {
+                  "key": "path",
+                  "value": "discussion123/attachments",
+                  "description": "Optional. Path within the bucket",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/upload/discussions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "upload", "discussions"]
+            },
+            "description": "Upload files to a specific bucket"
+          }
+        }
+      ],
+      "description": "Endpoints for uploading files to Supabase Storage"
     },
     {
-      "name": "Upload Multiple Files",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            {
-              "key": "files",
-              "type": "file",
-              "src": [],
-              "description": "Select multiple files"
+      "name": "Retrieve",
+      "item": [
+        {
+          "name": "Get File Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/avatars/user123/profile.jpg",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "avatars", "user123", "profile.jpg"]
             },
-            {
-              "key": "bucket",
-              "value": "avatars",
-              "description": "Optional. Default is 'avatars'. Options: avatars, courses, discussions",
-              "type": "text"
-            },
-            {
-              "key": "folder",
-              "value": "test-folder",
-              "description": "Optional. Folder path within the bucket",
-              "type": "text"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{baseUrl}}/storage/upload-multiple",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "storage",
-            "upload-multiple"
-          ]
-        },
-        "description": "Upload multiple files to Supabase Storage"
-      },
-      "response": []
+            "description": "Get information about a file (Note: This is a placeholder endpoint as mentioned in the code)"
+          }
+        }
+      ],
+      "description": "Endpoints for retrieving file information"
     },
     {
-      "name": "Get File Info",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/storage/:bucket/:key",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "storage",
-            ":bucket",
-            ":key"
-          ],
-          "variable": [
-            {
-              "key": "bucket",
-              "value": "avatars",
-              "description": "The bucket where the file is stored"
+      "name": "Update",
+      "item": [
+        {
+          "name": "Update File",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
             },
-            {
-              "key": "key",
-              "value": "test-folder/filename.jpg",
-              "description": "The file key/path"
-            }
-          ]
-        },
-        "description": "Get information about a file in Supabase Storage"
-      },
-      "response": []
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/update/avatars/user123/profile.jpg",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "update", "avatars", "user123", "profile.jpg"]
+            },
+            "description": "Update an existing file in Supabase Storage"
+          }
+        }
+      ],
+      "description": "Endpoints for updating files in Supabase Storage"
     },
     {
-      "name": "Delete File",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/storage/:bucket/:key",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "storage",
-            ":bucket",
-            ":key"
-          ],
-          "variable": [
-            {
-              "key": "bucket",
-              "value": "avatars",
-              "description": "The bucket where the file is stored"
+      "name": "Delete",
+      "item": [
+        {
+          "name": "Delete File by Path",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/delete/courses/course123/materials/document.pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "delete", "courses", "course123", "materials", "document.pdf"]
             },
-            {
-              "key": "key",
-              "value": "test-folder/filename.jpg",
-              "description": "The file key/path"
-            }
-          ]
+            "description": "Delete a file from Supabase Storage by specifying the bucket and file path"
+          }
         },
-        "description": "Delete a file from Supabase Storage"
-      },
-      "response": []
+        {
+          "name": "Delete Multiple Files by Paths",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paths\": [\n    \"discussion123/attachments/file1.jpg\",\n    \"discussion123/attachments/file2.pdf\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/delete-multiple/discussions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "delete-multiple", "discussions"]
+            },
+            "description": "Delete multiple files from Supabase Storage by specifying the bucket and file paths"
+          }
+        },
+        {
+          "name": "Delete File by URL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://your-project.supabase.co/storage/v1/object/public/avatars/user123/profile.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "delete"]
+            },
+            "description": "Delete a file by providing its public URL"
+          }
+        },
+        {
+          "name": "Delete Multiple Files by URLs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"urls\": [\n    \"https://your-project.supabase.co/storage/v1/object/public/avatars/user123/profile1.jpg\",\n    \"https://your-project.supabase.co/storage/v1/object/public/avatars/user123/profile2.jpg\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/storage/delete-multiple",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "storage", "delete-multiple"]
+            },
+            "description": "Delete multiple files by providing their public URLs"
+          }
+        }
+      ],
+      "description": "Endpoints for deleting files from Supabase Storage"
     }
   ],
   "event": [
@@ -177,7 +269,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:3010/api/v1",
+      "value": "http://localhost:3000",
       "type": "string",
       "description": "Base URL for the API"
     }

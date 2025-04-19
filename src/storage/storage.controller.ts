@@ -1,112 +1,119 @@
 import {
-  BadRequestException,
-  Body,
   Controller,
+  Post,
+  Put,
   Delete,
   Get,
-  MaxFileSizeValidator,
-  Param,
-  ParseFilePipe,
-  Post,
-  Query,
-  UploadedFile,
+  UseInterceptors,
   UploadedFiles,
-  UseInterceptors
+  UploadedFile,
+  Body,
+  Param,
+  ValidationPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { StorageService } from './storage.service';
+import { FileMetadata } from './interfaces/file-metadata.interface';
 import { BucketType, UploadFileDto } from './dto/upload-file.dto';
-import { FileResponseDto, MultipleFilesResponseDto } from './dto/file-response.dto';
+import { FileResponseDto } from './dto/file-response.dto';
+import { DeleteFileDto, DeleteMultipleFilesDto } from './dto/delete-file.dto';
 
 @Controller('storage')
 export class StorageController {
-  private maxFileSize: number;
-  private maxFiles: number;
-
-  constructor(
-    private readonly storageService: StorageService,
-    private readonly configService: ConfigService,
-  ) {
-    this.maxFileSize = this.configService.get<number>('MAX_FILE_SIZE', 10 * 1024 * 1024); // Default 10MB
-    this.maxFiles = this.configService.get<number>('MAX_FILES', 10); // Default 10 files
-  }
+  constructor(private readonly storageService: StorageService) {}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
-        ],
-      }),
-    ) file: Express.Multer.File,
-    @Body() uploadFileDto: UploadFileDto,
-  ): Promise<FileResponseDto> {
-    if (!file) {
-      throw new BadRequestException('File is required');
-    }
-
-    const bucket = uploadFileDto.bucket || BucketType.AVATARS;
-    const folder = uploadFileDto.folder;
-
-    const result = await this.storageService.uploadFile(file, {
-      bucket,
-      folder,
-      contentType: file.mimetype,
-    });
-
-    return result;
+    @UploadedFile() file: Express.Multer.File,
+    @Body(ValidationPipe) uploadDto: UploadFileDto,
+  ): Promise<FileMetadata> {
+    const bucketName = uploadDto.bucket || BucketType.AVATARS;
+    const path = uploadDto.folder || '';
+    const result = await this.storageService.uploadFiles([file], bucketName, path);
+    return result[0];
   }
 
   @Post('upload-multiple')
-  @UseInterceptors(FilesInterceptor('files', 10)) // Max 10 files
-  async uploadMultipleFiles(
-    @UploadedFiles(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
-        ],
-      }),
-    ) files: Express.Multer.File[],
-    @Body() uploadFileDto: UploadFileDto,
-  ): Promise<MultipleFilesResponseDto> {
-    if (!files || files.length === 0) {
-      throw new BadRequestException('Files are required');
-    }
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body(ValidationPipe) uploadDto: UploadFileDto,
+  ): Promise<FileMetadata[]> {
+    const bucketName = uploadDto.bucket || BucketType.AVATARS;
+    const path = uploadDto.folder || '';
+    return this.storageService.uploadFiles(files, bucketName, path);
+  }
 
-    const bucket = uploadFileDto.bucket || BucketType.AVATARS;
-    const folder = uploadFileDto.folder;
-
-    const results = await this.storageService.uploadMultipleFiles(files, {
-      bucket,
-      folder,
-    });
-
-    return {
-      files: results,
-      totalCount: results.length,
-    };
+  @Post('upload/:bucket')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadFilesToBucket(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Param('bucket') bucketName: string,
+    @Body('path') path?: string,
+  ): Promise<FileMetadata[]> {
+    return this.storageService.uploadFiles(files, bucketName, path);
   }
 
   @Get(':bucket/:key')
   async getFileInfo(
-    @Param('bucket') bucket: string,
+    @Param('bucket') bucketName: string,
     @Param('key') key: string,
   ): Promise<FileResponseDto> {
-    return this.storageService.getFileInfo(bucket, key);
+    // This is a placeholder for future implementation
+    // Currently, Supabase doesn't provide a direct way to get file metadata
+    // We would need to store metadata in a database to implement this properly
+    return {
+      key,
+      url: this.storageService.getPublicUrl(bucketName, key),
+      bucket: bucketName,
+      contentType: 'application/octet-stream', // Placeholder
+      size: 0, // Placeholder
+      createdAt: new Date(),
+    };
   }
 
-  @Delete(':bucket/:key')
+  @Put('update/:bucket/*filepath')
+  @UseInterceptors(FileInterceptor('file'))
+  async updateFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('bucket') bucketName: string,
+    @Param('filepath') filePath: string,
+  ): Promise<FileMetadata> {
+    return this.storageService.updateFile(file, filePath, bucketName);
+  }
+
+  @Delete('delete/:bucket/*filepath')
   async deleteFile(
-    @Param('bucket') bucket: string,
-    @Param('key') key: string,
-  ): Promise<{ success: boolean; message: string }> {
-    await this.storageService.deleteFile(bucket, key);
-    return {
-      success: true,
-      message: 'File deleted successfully',
-    };
+    @Param('bucket') bucketName: string,
+    @Param('filepath') filePath: string,
+  ) {
+    return this.storageService.deleteFile(filePath, bucketName);
+  }
+
+  @Delete('delete-multiple/:bucket')
+  async deleteFiles(
+    @Param('bucket') bucketName: string,
+    @Body('paths') paths: string[],
+  ) {
+    return this.storageService.deleteFiles(paths, bucketName);
+  }
+
+  @Post('delete')
+  @HttpCode(HttpStatus.OK)
+  async deleteFileByUrl(
+    @Body(ValidationPipe) deleteDto: DeleteFileDto,
+  ) {
+    return this.storageService.deleteFileByUrl(deleteDto.url);
+  }
+
+  @Post('delete-multiple')
+  @HttpCode(HttpStatus.OK)
+  async deleteFilesByUrls(
+    @Body(ValidationPipe) deleteDto: DeleteMultipleFilesDto,
+  ) {
+    return this.storageService.deleteFilesByUrls(deleteDto.urls);
   }
 }
