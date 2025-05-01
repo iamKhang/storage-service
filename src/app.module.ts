@@ -8,7 +8,6 @@ import { StorageModule } from './storage/storage.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
     }),
     StorageModule,
   ],

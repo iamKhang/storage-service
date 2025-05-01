@@ -9,7 +9,7 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy source code
+# Copy source code (excluding .env via .dockerignore)
 COPY . .
 
 # Build the application
@@ -34,11 +34,8 @@ COPY package*.json ./
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/node_modules ./node_modules
 
-# Copy .env.example (will be used as a template)
-COPY .env ./
-
 # Expose the port the app runs on
-EXPOSE 3020
+EXPOSE 3000
 
 # Command to run the application
 CMD ["node", "dist/main"]

@@ -94,6 +94,8 @@ $ docker-compose up -d
 
 The service will be available at http://localhost:3000/api/v1
 
+> **Note**: The `.env` file is used directly by docker-compose and is not included in the Docker image for security reasons.
+
 ## API Endpoints
 
 All endpoints are prefixed with `/api/v1`.
@@ -200,7 +202,7 @@ Within each bucket, you can organize files in folders by specifying the `folder`
 This project includes Docker support for easy deployment:
 
 - `Dockerfile`: Multi-stage build for a production-ready container
-- `docker-compose.yml`: Configuration for running the service with all required environment variables
+- `docker-compose.yml`: Configuration for running the service with environment variables from `.env` file
 
 ### Building the Docker image manually
 
@@ -209,6 +211,14 @@ $ docker build -t storage-service .
 ```
 
 ### Running the Docker container manually
+
+```bash
+$ docker run -p 3000:3000 \
+  --env-file .env \
+  storage-service
+```
+
+Alternatively, you can specify environment variables directly:
 
 ```bash
 $ docker run -p 3000:3000 \

@@ -6,7 +6,6 @@ dist
 .vscode
 .idea
 .env
-.env.*
 *.md
 !README.md
 test

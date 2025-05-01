@@ -7,16 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: storage-service
     ports:
-      - "3020:3020"
-    environment:
-      - NODE_ENV=production
-      - PORT=3020
-      - API_PREFIX=/api/v1
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
-      - STORAGE_BUCKETS=avatars,courses,discussions
-      - MAX_FILE_SIZE=10485760
-      - MAX_FILES=10
+      - "3000:3000"
+    env_file:
+      - .env
     restart: unless-stopped
     volumes:
       - ./uploads:/usr/src/app/uploads
