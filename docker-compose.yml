@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  storage-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: storage-service
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - API_PREFIX=/api/v1
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - STORAGE_BUCKETS=avatars,courses,discussions
+      - MAX_FILE_SIZE=10485760
+      - MAX_FILES=10
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/usr/src/app/uploads
