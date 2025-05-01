@@ -35,7 +35,7 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/node_modules ./node_modules
 
 # Copy .env.example (will be used as a template)
-COPY .env.example ./
+COPY .env ./
 
 # Expose the port the app runs on
 EXPOSE 3020
