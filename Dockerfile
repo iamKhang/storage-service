@@ -35,7 +35,7 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/node_modules ./node_modules
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 3020
 
 # Command to run the application
 CMD ["node", "dist/main"]
