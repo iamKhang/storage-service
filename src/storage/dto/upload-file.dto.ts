@@ -4,6 +4,7 @@ export enum BucketType {
   AVATARS = 'avatars',
   COURSES = 'courses',
   DISCUSSIONS = 'discussions',
+  BLOGS = 'blogs',
 }
 
 export class UploadFileDto {
